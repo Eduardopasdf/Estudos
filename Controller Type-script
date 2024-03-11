@@ -1,0 +1,85 @@
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { AppService } from './app.service';
+import * as fs from 'fs';
+
+@Controller('my_first_controller')
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get()
+  getHello(): string {
+    return this.appService.getHello();
+  }
+
+  @Get('doc_information/:name')
+  docInfo(@Param('name') name: string) {
+    const returnOfClient = [
+      { name: 'Joao', doc: '123456789', age: 25 },
+      { name: 'Maria', doc: '987654321', age: 30 },
+      { name: 'Jose', doc: '456789123', age: 40 },
+    ];
+
+    return returnOfClient.find((client) => client.name === name);
+  }
+
+  @Get('equacao')
+  solveEquacao(@Query('a') a: number, @Query('b') b: number, @Query('c') c: number) {
+    // Calcula o discriminante
+    const discriminante = b ** 2 - 4 * a * c;
+
+    // Verifica se a equação tem raízes reais
+    if (discriminante < 0) {
+      return 'A equação não tem raízes reais.';
+    }
+
+    // Calcula as raízes
+    const x1 = (-b + Math.sqrt(discriminante)) / (2 * a);
+    const x2 = (-b - Math.sqrt(discriminante)) / (2 * a);
+
+    // Retorna as raízes
+    return { x1, x2 };
+  }
+
+  @Get('livros')
+getLivrosByAutor(@Query('autor') autor: string) {
+  const livros = [
+    { nome_livro: 'Aprendendo JavaScript', autor: 'José da Silva', descricao: 'Um livro introdutório sobre JavaScript.' },
+    { nome_livro: 'A Arte da Programação', autor: 'Maria Oliveira', descricao: 'Um livro abrangente sobre algoritmos e estruturas de dados.' },
+    { nome_livro: 'Python para Iniciantes', autor: 'Carlos Souza', descricao: 'Um guia prático para aprender Python.' },
+    { nome_livro: 'Inteligência Artificial: Uma Abordagem Moderna', autor: 'Pedro Santos', descricao: 'Um livro sobre os fundamentos e aplicações da IA.' },
+    { nome_livro: 'CSS Avançado', autor: 'Ana Silva', descricao: 'Um livro para aprofundar seus conhecimentos em CSS.' },
+    { nome_livro: 'O Guia Definitivo do Node.js', autor: 'Rafael Marques', descricao: 'Um guia completo sobre Node.js.' },
+    { nome_livro: 'React: Do Básico ao Avançado', autor: 'Mariana Costa', descricao: 'Um livro abrangente sobre React.' },
+    { nome_livro: 'Java: Fundamentos e Boas Práticas', autor: 'Fernando Lima', descricao: 'Um livro introdutório sobre Java.' },
+    { nome_livro: 'HTML5 e CSS3: Desenvolvimento Web', autor: 'Luisa Oliveira', descricao: 'Um livro sobre desenvolvimento web com HTML5 e CSS3.' },
+    { nome_livro: 'MongoDB: Guia Prático', autor: 'Gustavo Santos', descricao: 'Um guia prático sobre MongoDB.' }
+  ];
+
+  const livrosFiltrados = livros.filter(livro => livro.autor === autor);
+
+  if (livrosFiltrados.length === 0) {
+    return 'Nenhum livro encontrado para o autor especificado.';
+  }
+
+  return livrosFiltrados;
+}
+
+@Get('preco-comida/:comida')
+  getPrecoComida(@Param('comida') comida: string) {
+    try {
+      const arquivo = fs.readFileSync('alimentos.txt', 'utf8');
+      const linhas = arquivo.split('\n');
+      for (const linha of linhas) {
+        const [chave, valor] = linha.split(',');
+        const nomeComida = chave.split(':')[1];
+        if (nomeComida === comida) {
+          const preco = valor.split(':')[1];
+          return { preco: parseFloat(preco) };
+        }
+      }
+      return { mensagem: 'Comida não encontrada' };
+    } catch (error) {
+      return { erro: 'Erro ao ler o arquivo' };
+    }
+  }
+}
