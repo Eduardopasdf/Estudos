@@ -1,0 +1,10 @@
+comida:Hamburguer,preco:10,00
+comida:Pizza,preco:15,00
+comida:Salada,preco:8,00
+comida:Sanduíche,preco:7,50
+comida:Sushi,preco:20,00
+comida:Lasanha,preco:12,00
+comida:Macarrão,preco:9,00
+comida:Frango Grelhado,preco:11,00
+comida:Churrasco,preco:18,00
+comida:Peixe,preco:16,00
